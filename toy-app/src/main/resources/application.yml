@@ -1,0 +1,3 @@
+spring:
+  profiles:
+    include: auth,task,point,common,redis,core,quartz

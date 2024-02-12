@@ -1,0 +1,9 @@
+rootProject.name = 'toy'
+
+include 'toy-common'
+include 'toy-app'
+include 'toy-admin'
+include 'toy-core'
+include 'toy-quartz'
+include 'toy-task'
+include 'toy-alarm'

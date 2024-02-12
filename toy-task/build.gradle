@@ -1,0 +1,17 @@
+plugins{
+    id 'java'
+    id 'java-library'
+    id 'java-test-fixtures'
+}
+
+dependencies {
+    implementation project(':toy-common')
+    implementation project(':toy-core')
+    implementation project(':toy-quartz')
+
+    testImplementation(testFixtures(project(':toy-core')))
+    testImplementation(testFixtures(project(':toy-common')))
+}
+
+bootJar { enabled = false }
+jar { enabled = true }

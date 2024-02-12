@@ -1,0 +1,13 @@
+plugins{
+    id 'java-test-fixtures'
+}
+
+dependencies {
+    implementation(project(":toy-common"))
+
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
+}
+
+
+bootJar { enabled = false }
+jar { enabled = true }

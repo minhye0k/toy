@@ -1,0 +1,9 @@
+dependencies {
+    implementation project(':toy-common')
+    implementation project(':toy-core')
+    implementation project(':toy-quartz')
+}
+
+
+bootJar { enabled = false }
+jar { enabled = true }
