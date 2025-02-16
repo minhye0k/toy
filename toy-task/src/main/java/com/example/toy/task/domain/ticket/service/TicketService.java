@@ -25,7 +25,7 @@ public class TicketService {
     private final TaskRepository taskRepository;
 
     @Transactional
-    public void accept(Long seq) {
+    public void acceptUsingXLock(Long seq) {
         Ticket ticket = ticketRepository.findById(seq)
                 .orElseThrow(() -> new CustomException(ExceptionCode.TICKET_NOT_FOUND));
 
@@ -43,7 +43,7 @@ public class TicketService {
 
         task.increaseMatchedCount();
 
-        if (matchedCount+1 == requiredCount) {
+        if (matchedCount + 1 == requiredCount) {
             task.updateStatus(TaskStatus.COMPLETED);
         }
 

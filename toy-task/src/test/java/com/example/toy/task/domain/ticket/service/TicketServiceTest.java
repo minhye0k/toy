@@ -77,7 +77,7 @@ public class TicketServiceTest {
         Long ticketSeq = 1L;
 
         //when
-        ticketService.accept(ticketSeq);
+        ticketService.acceptUsingXLock(ticketSeq);
 
         //then
         int count = (int) events.stream(TicketAcceptedEvent.class).count();
@@ -95,7 +95,7 @@ public class TicketServiceTest {
         for (long i = 1; i < 4; i++) {
             long seq = i;
             executorService.execute(() -> {
-                ticketService.accept(seq);
+                ticketService.acceptUsingXLock(seq);
                 countDownLatch.countDown();
             });
         }
@@ -105,7 +105,7 @@ public class TicketServiceTest {
         //then
         Task task = taskRepository.findById(1L).get();
         long matchedCount = task.getMatchedCount();
-        assertEquals(matchedCount, 3);
+        assertEquals(3, matchedCount);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class TicketServiceTest {
         for (long i = 1; i <= 4; i++) {
             long seq = i;
             executorService.execute(() -> {
-                ticketService.accept(seq);
+                ticketService.acceptUsingXLock(seq);
                 countDownLatch.countDown();
             });
         }
@@ -128,6 +128,6 @@ public class TicketServiceTest {
         //then
         Task task = taskRepository.findById(1L).get();
         TaskStatus status = task.getStatus();
-        assertEquals(status, TaskStatus.COMPLETED);
+        assertEquals(TaskStatus.COMPLETED, status);
     }
 }

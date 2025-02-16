@@ -16,7 +16,7 @@ public class TicketController {
 
     @PostMapping("{seq}/accept")
     public ResponseEntity<Void> accept(@PathVariable Long seq) {
-        ticketService.accept(seq);
+        ticketService.acceptUsingXLock(seq);
         return ResponseEntity.ok().build();
     }
 
