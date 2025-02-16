@@ -9,9 +9,13 @@ spring:
     username: root
     password: Asdf1234!
   jpa:
-    show-sql: true
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
+        show-sql: true
         format_sql: true
+    show-sql: true
+logging:
+  level:
+    org.hibernate.SQL: debug

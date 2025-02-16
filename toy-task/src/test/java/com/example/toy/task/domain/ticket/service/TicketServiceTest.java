@@ -6,6 +6,7 @@ import com.example.toy.core.task.entity.Task;
 import com.example.toy.core.task.entity.TaskStatus;
 import com.example.toy.core.ticket.dao.TicketRepository;
 import com.example.toy.core.ticket.entity.Ticket;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @RecordApplicationEvents
+@Slf4j
 public class TicketServiceTest {
     @Autowired
     TicketService ticketService;
@@ -34,6 +36,8 @@ public class TicketServiceTest {
     TaskRepository taskRepository;
     @Autowired
     ApplicationEvents events;
+
+    Long taskSeq = 1L;
 
     @AfterEach
     void tearDown() {
@@ -55,6 +59,8 @@ public class TicketServiceTest {
                         .endAt(now.plusHours(3))
                         .build()
         );
+
+        taskSeq = task.getSeq();
 
         List<Ticket> ticketList = new ArrayList<>();
         for (long i = 1; i < 6; i++) {
@@ -90,10 +96,11 @@ public class TicketServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
         CountDownLatch countDownLatch = new CountDownLatch(3);
 
-        //when
+        final List<Ticket> tickets = ticketRepository.findByTaskSeq(taskSeq);
 
-        for (long i = 1; i < 4; i++) {
-            long seq = i;
+        //when
+        for (Ticket ticket : tickets) {
+            long seq = ticket.getSeq();
             executorService.execute(() -> {
                 ticketService.acceptUsingXLock(seq);
                 countDownLatch.countDown();
@@ -103,7 +110,7 @@ public class TicketServiceTest {
         countDownLatch.await();
 
         //then
-        Task task = taskRepository.findById(1L).get();
+        Task task = taskRepository.findById(taskSeq).get();
         long matchedCount = task.getMatchedCount();
         assertEquals(3, matchedCount);
     }
@@ -114,9 +121,10 @@ public class TicketServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(4);
         CountDownLatch countDownLatch = new CountDownLatch(4);
 
+        final List<Ticket> tickets = ticketRepository.findByTaskSeq(taskSeq);
         // when
-        for (long i = 1; i <= 4; i++) {
-            long seq = i;
+        for (Ticket ticket : tickets) {
+            long seq = ticket.getSeq();
             executorService.execute(() -> {
                 ticketService.acceptUsingXLock(seq);
                 countDownLatch.countDown();
@@ -126,7 +134,7 @@ public class TicketServiceTest {
         countDownLatch.await();
 
         //then
-        Task task = taskRepository.findById(1L).get();
+        Task task = taskRepository.findById(taskSeq).get();
         TaskStatus status = task.getStatus();
         assertEquals(TaskStatus.COMPLETED, status);
     }
